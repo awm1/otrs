@@ -28,14 +28,14 @@ class OtrsApi
     {
         $this->client = new \SoapClient(
             null, [
-                'location' => $this->url,
-                'uri' => $URI,
-                'trace' => 1,
-                'login' => $this->username,
-                'password' => $this->password,
-                'style' => SOAP_RPC,
-                'use' => SOAP_ENCODED
-            ]
+                    'location' => $this->url,
+                    'uri' => $URI,
+                    'trace' => 1,
+                    'login' => $this->username,
+                    'password' => $this->password,
+                    'style' => SOAP_RPC,
+                    'use' => SOAP_ENCODED,
+                ]
         );
     }
 
@@ -98,8 +98,7 @@ class OtrsApi
         $state = 'new',
         $ownerID = 1,
         $userID = 1
-        )
-    {
+    ) {
         if (strlen(trim($title)) == 0) {
             throw new \Exception('Need a title. Title is empty');
         }
@@ -111,13 +110,20 @@ class OtrsApi
         }
 
         $request = array(
-            "TicketObject", "TicketCreate",
-            "Title", $title,
-            "Lock", $lockState,
-            "PriorityID", $priorityID,
-            "State", $state,
-            "OwnerID", $ownerID,
-            "UserID", $userID
+            "TicketObject",
+            "TicketCreate",
+            "Title",
+            $title,
+            "Lock",
+            $lockState,
+            "PriorityID",
+            $priorityID,
+            "State",
+            $state,
+            "OwnerID",
+            $ownerID,
+            "UserID",
+            $userID,
         );
 
         if ($queueID) {
@@ -150,8 +156,7 @@ class OtrsApi
         $articleType = 'webrequest',
         $from = null,
         $contentType = 'text/plain; charset=ISO-8859-1'
-    )
-    {
+    ) {
 
         if (strlen(trim($subject)) == 0) {
             throw new \Exception('Need a subject. Subject is empty');
@@ -166,38 +171,59 @@ class OtrsApi
             throw new \Exception('TicketID needs to be an integer');
         }
 
-        $request =  [
-            "TicketObject", "ArticleCreate",
-            "TicketID", $ticketID,
-            "ArticleType", $articleType,
-            "SenderType", "system",
-            "HistoryType", "WebRequestCustomer",
-            "HistoryComment", $createdBy,
-            "Subject", $subject,
-            "ContentType", $contentType,
-            "Body", $body,
-            "UserID", $userID,
+        $request = [
+            "TicketObject",
+            "ArticleCreate",
+            "TicketID",
+            $ticketID,
+            "ArticleType",
+            $articleType,
+            "SenderType",
+            "system",
+            "HistoryType",
+            "WebRequestCustomer",
+            "HistoryComment",
+            $createdBy,
+            "Subject",
+            $subject,
+            "ContentType",
+            $contentType,
+            "Body",
+            $body,
+            "UserID",
+            $userID,
 
-            ];
+        ];
 
         switch ($articleType) {
             case 'note-internal':
-                $request = array_merge($request, [
-                    "NoAgentNotify", 1,
-                ]);
+                $request = array_merge(
+                    $request,
+                    [
+                        "NoAgentNotify",
+                        1,
+                    ]
+                );
                 break;
             case 'webrequest':
-                $request = array_merge($request, [
-                    "Loop", 0,
-                    "From", $from,
-                    "AutoResponseType", 'auto reply',
-                    "OrigHeader", [
-                        'From' => $from,
-                        'To' =>  'Postmaster',
-                        'Subject' => $subject,
-                        'Body' => $body,
+                $request = array_merge(
+                    $request,
+                    [
+                        "Loop",
+                        0,
+                        "From",
+                        $from,
+                        "AutoResponseType",
+                        'auto reply',
+                        "OrigHeader",
+                        [
+                            'From' => $from,
+                            'To' => 'Postmaster',
+                            'Subject' => $subject,
+                            'Body' => $body,
+                        ],
                     ]
-                ]);
+                );
                 break;
         }
 
@@ -213,12 +239,18 @@ class OtrsApi
     public function attachFileToArticle($articleID, $filePath, $fileName, $mimeType)
     {
         $request = array(
-            "TicketObject", "ArticleWriteAttachment",
-            "Content", new \SoapVar(file_get_contents($filePath),XSD_BASE64BINARY, 'xsd:base64Binary'),
-            "ContentType", $mimeType,
-            "Filename", $fileName,
-            "ArticleID", $articleID,
-            "UserID", 1
+            "TicketObject",
+            "ArticleWriteAttachment",
+            "Content",
+            new \SoapVar(file_get_contents($filePath), XSD_BASE64BINARY, 'xsd:base64Binary'),
+            "ContentType",
+            $mimeType,
+            "Filename",
+            $fileName,
+            "ArticleID",
+            $articleID,
+            "UserID",
+            1,
         );
 
         return $this->send($request);
@@ -230,8 +262,10 @@ class OtrsApi
     public function getTicketNumber($TicketID)
     {
         $request = [
-            'TicketObject', 'TicketNumberLookup',
-            'TicketID', $TicketID,
+            'TicketObject',
+            'TicketNumberLookup',
+            'TicketID',
+            $TicketID,
         ];
 
         $TicketNumber = $this->send($request);
@@ -247,8 +281,10 @@ class OtrsApi
     public function getID($TicketNumber)
     {
         $request = [
-            'TicketObject', 'TicketIDLookup',
-            'TicketNumber', $TicketNumber,
+            'TicketObject',
+            'TicketIDLookup',
+            'TicketNumber',
+            $TicketNumber,
         ];
 
         $TicketID = $this->send($request);
@@ -257,16 +293,35 @@ class OtrsApi
     }
 
     /**
+     * Get Queue list
+     */
+    public function getQueus()
+    {
+        $request = [
+            'QueueObject',
+            'GetAllQueues',
+        ];
+
+        $queues = $this->send($request);
+
+        return $queues;
+    }
+
+    /**
      * Get Ticket Information
      */
     public function getTicket($TicketID, $Extended = false)
     {
         $request = [
-            'TicketObject' , 'TicketGet',
-            'TicketID', $TicketID,
-            'Extended', (int)$Extended,
+            'TicketObject',
+            'TicketGet',
+            'TicketID',
+            $TicketID,
+            'Extended',
+            (int) $Extended,
         ];
         $body = $this->send($request);
+
         return $body;
     }
 
@@ -277,9 +332,12 @@ class OtrsApi
     public function moveTicket($TicketID, $Queue, $UserID = 1)
     {
         $request = [
-            'TicketObject', 'TicketQueueSet',
-            'TicketID', $TicketID,
-            'UserID', $UserID,
+            'TicketObject',
+            'TicketQueueSet',
+            'TicketID',
+            $TicketID,
+            'UserID',
+            $UserID,
         ];
 
         if (is_int($Queue)) {
@@ -290,26 +348,32 @@ class OtrsApi
             $request[] = $Queue;
         }
         $success = $this->send($request);
+
         return $success;
     }
 
     public function getTicketState($TicketID)
     {
         $ticket = $this->getTicket($TicketID);
+
         return $ticket['State'];
     }
 
     /**
-     * @param int $TicketID
+     * @param int        $TicketID
      * @param string|int $State The name of a state, or a state ID
+     *
      * @return bool $success
      */
     public function setTicketState($TicketID, $State)
     {
         $request = [
-            'TicketObject', 'TicketStateSet',
-            'TicketID', $TicketID,
-            'UserID', 1
+            'TicketObject',
+            'TicketStateSet',
+            'TicketID',
+            $TicketID,
+            'UserID',
+            1,
         ];
 
         if (is_int($State)) {
@@ -320,7 +384,8 @@ class OtrsApi
         $request[] = $State;
 
         $success = $this->send($request);
-        return (bool)$success;
+
+        return (bool) $success;
     }
 
 } 
