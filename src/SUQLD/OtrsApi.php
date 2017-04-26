@@ -71,7 +71,9 @@ class OtrsApi
                 $new_result = [];
                 $result = array_values($result);
                 for ($c = 0; $c < sizeof($result); $c = $c + 2) {
-                    $new_result[$result[$c]] = $result[$c + 1];
+                    if (isset($result[$c + 1])) {
+                        $new_result[$result[$c]] = $result[$c + 1];
+                    }
                 }
                 $result = $new_result;
             }
@@ -256,7 +258,7 @@ class OtrsApi
         return $this->send($request);
     }
 
-    public function getTicketsInQueues(array $queues, array $stateIDs, int $userId = 1)
+    public function getTicketsInQueues(array $queues, array $statesIDs, int $userId = 1)
     {
         $request = [
             'TicketObject',
@@ -268,7 +270,7 @@ class OtrsApi
             'Queues',
             $queues,
             'StateIDs',
-            $stateIDs,
+            $statesIDs,
         ];
         $body = $this->send($request);
 
