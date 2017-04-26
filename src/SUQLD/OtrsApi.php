@@ -256,7 +256,7 @@ class OtrsApi
         return $this->send($request);
     }
 
-    public function getTicketsInQueues(array $queues, array $statesIDs, int $userId = 1)
+    public function getTicketsInQueues(array $queues, array $stateIDs, int $userId = 1)
     {
         $request = [
             'TicketObject',
@@ -267,8 +267,8 @@ class OtrsApi
             $userId,
             'Queues',
             $queues,
-            'StatesIDs',
-            $statesIDs,
+            'StateIDs',
+            $stateIDs,
         ];
         $body = $this->send($request);
 
