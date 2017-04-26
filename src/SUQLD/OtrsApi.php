@@ -256,6 +256,25 @@ class OtrsApi
         return $this->send($request);
     }
 
+    public function getTicketsInQueues(array $queues, array $statesIDs, int $userId = 1)
+    {
+        $request = [
+            'TicketObject',
+            'TicketSearch',
+            'Result',
+            'ARRAY',
+            'UserID',
+            $userId,
+            'Queues',
+            $queues,
+            'StatesIDs',
+            $statesIDs,
+        ];
+        $body = $this->send($request);
+
+        return $body;
+    }
+
     /**
      * Get the Ticket Number
      */
@@ -324,7 +343,6 @@ class OtrsApi
 
         return $body;
     }
-
 
     /**
      * Move a Ticket to a queue
