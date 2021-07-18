@@ -38,7 +38,9 @@ class OtrsApi
                                 'verify_peer_name' => false,
                                 'allow_self_signed' => true
                             ]
-                        ])
+                        ]),
+                        'exceptions' => 0,
+                        'cache_wsdl' => 0,
                     ] : [],
                 [
                     'location' => $this->url,
