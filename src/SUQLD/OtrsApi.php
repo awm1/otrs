@@ -13,7 +13,7 @@ class OtrsApi
 
     private $client;
 
-    public function __construct($url, $username, $password)
+    public function __construct($url, $username, $password, $disableSslVerification = false)
     {
         $this->url = $url;
         $this->username = $username;
@@ -24,10 +24,23 @@ class OtrsApi
     /**
      * Connect to the Ticket System
      */
-    public function Client($URI = 'Core')
+    public function Client($URI = 'Core', $disableSslVerification = false)
     {
         $this->client = new \SoapClient(
-            null, [
+            null,
+            array_merge(
+                $disableSslVerification ?
+                    [
+                        'stream_context' => stream_context_create([
+                            'ssl' => [
+                                // set some SSL/TLS specific options
+                                'verify_peer' => false,
+                                'verify_peer_name' => false,
+                                'allow_self_signed' => true
+                            ]
+                        ])
+                    ] : [],
+                [
                     'location' => $this->url,
                     'uri' => $URI,
                     'trace' => 1,
@@ -36,6 +49,7 @@ class OtrsApi
                     'style' => SOAP_RPC,
                     'use' => SOAP_ENCODED,
                 ]
+            )
         );
     }
 
@@ -258,7 +272,7 @@ class OtrsApi
         return $this->send($request);
     }
 
-    public function getTicketsInQueues(array $queues, array $statesIDs, int $userId = 1)
+    public function getTicketsInQueues(array $queues, array $statesIDs, $userId = 1)
     {
         $request = [
             'TicketObject',
