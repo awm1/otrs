@@ -4,6 +4,7 @@ namespace SUQLD;
 
 class OtrsApi
 {
+    const DEFAULT_URI ='Core';
 
     private $log = [];
 
@@ -18,13 +19,13 @@ class OtrsApi
         $this->url = $url;
         $this->username = $username;
         $this->password = $password;
-        $this->Client();
+        $this->Client(self::DEFAULT_URI, $disableSslVerification);
     }
 
     /**
      * Connect to the Ticket System
      */
-    public function Client($URI = 'Core', $disableSslVerification = false)
+    public function Client($URI = self::DEFAULT_URI, $disableSslVerification = false)
     {
         $this->client = new \SoapClient(
             null,
@@ -38,7 +39,9 @@ class OtrsApi
                                 'verify_peer_name' => false,
                                 'allow_self_signed' => true
                             ]
-                        ])
+                        ]),
+                        'exceptions' => 0,
+                        'cache_wsdl' => 0,
                     ] : [],
                 [
                     'location' => $this->url,
