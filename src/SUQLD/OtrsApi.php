@@ -243,9 +243,7 @@ class OtrsApi
                 break;
         }
 
-        $articleID = $this->send($request);
-
-        return $articleID;
+        return $this->send($request);
     }
 
     /**
@@ -286,9 +284,8 @@ class OtrsApi
             'StateIDs',
             $statesIDs,
         ];
-        $body = $this->send($request);
 
-        return $body;
+        return $this->send($request);
     }
 
     /**
@@ -305,9 +302,7 @@ class OtrsApi
 
         $TicketNumber = $this->send($request);
 
-        $TicketNumber = number_format($TicketNumber, 0, '.', '');
-
-        return $TicketNumber;
+        return number_format($TicketNumber, 0, '.', '');
     }
 
     /**
@@ -322,9 +317,7 @@ class OtrsApi
             $TicketNumber,
         ];
 
-        $TicketID = $this->send($request);
-
-        return $TicketID;
+        return $this->send($request);
     }
 
     /**
@@ -337,9 +330,7 @@ class OtrsApi
             'GetAllQueues',
         ];
 
-        $queues = $this->send($request);
-
-        return $queues;
+        return $this->send($request);
     }
 
     /**
@@ -355,9 +346,8 @@ class OtrsApi
             'Extended',
             (int) $Extended,
         ];
-        $body = $this->send($request);
 
-        return $body;
+        return $this->send($request);
     }
 
     /**
@@ -381,16 +371,15 @@ class OtrsApi
             $request[] = 'Queue';
             $request[] = $Queue;
         }
-        $success = $this->send($request);
 
-        return $success;
+        return $this->send($request);
     }
 
-    public function getTicketState($TicketID)
+    public function getTicketState($TicketID): ?string
     {
         $ticket = $this->getTicket($TicketID);
 
-        return $ticket['State'];
+        return $ticket['State'] ?? null;
     }
 
     /**
